@@ -1,8 +1,10 @@
-﻿using Spectre.Console;
+﻿using CodingTrackerApplication.Helpers;
+using Spectre.Console;
 
 namespace CodingTrackerApplication;
-internal class MainMenu
+internal interface MainMenu
 {
+    private static readonly CodingTrackerController _controller = new();
     internal static void GetUserInput()
     {
         Console.Clear();
@@ -18,7 +20,7 @@ internal class MainMenu
             AnsiConsole.Markup("\nType 4 to [underline blue]Update[/]  Record.");
             Console.WriteLine("\n------------------------------------------------------\n");
 
-            string command = Console.ReadLine();
+            string command = ConsoleHelper.ReadNonNullInput();
 
             switch (command)
             {
@@ -28,16 +30,16 @@ internal class MainMenu
                     Environment.Exit(0);
                     break;
                 case "1":
-                    AppEngine.GetAllRecords();
+                    _controller.ViewAllRecords();
                     break;
                 case "2":
-                    AppEngine.InsertTime();
+                    _controller.CreateRecord();
                     break;
                 case "3":
-                    AppEngine.Delete();
+                    _controller.DeleteRecord();
                     break;
                 case "4":
-                    AppEngine.Update();
+                    _controller.UpdateRecord();
                     break;
 
                 default:
