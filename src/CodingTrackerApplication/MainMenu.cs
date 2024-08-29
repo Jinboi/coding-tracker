@@ -15,9 +15,11 @@ internal interface MainMenu
             Console.WriteLine("\nWhat would you like to do?");
             AnsiConsole.Markup("\nType 0 to [underline blue]Close[/]  Application.");
             AnsiConsole.Markup("\nType 1 to [underline blue]View[/]  All Records.");
-            AnsiConsole.Markup("\nType 2 to [underline blue]Insert[/]  Record.");
-            AnsiConsole.Markup("\nType 3 to [underline blue]Delete[/]  Record.");
-            AnsiConsole.Markup("\nType 4 to [underline blue]Update[/]  Record.");
+            AnsiConsole.Markup("\nType 2 to [underline blue]Insert[/]  Records.");
+            AnsiConsole.Markup("\nType 3 to [underline blue]Delete[/]  Records.");
+            AnsiConsole.Markup("\nType 4 to [underline blue]Update[/]  Records.");
+            AnsiConsole.Markup("\nType 5 to [underline blue]View Filtered[/]  Records.");
+
             Console.WriteLine("\n------------------------------------------------------\n");
 
             string command = ConsoleHelper.ReadNonNullInput();
@@ -41,6 +43,10 @@ internal interface MainMenu
                 case "4":
                     _controller.UpdateRecord();
                     break;
+                case "5":
+                    _controller.ViewFilteredRecords();
+                    break;
+
 
                 default:
                     Console.WriteLine("\nInvalid Command. Please type a number from 0 to 4.\n");

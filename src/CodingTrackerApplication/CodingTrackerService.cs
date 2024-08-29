@@ -1,6 +1,7 @@
 ﻿using CodingTrackerApplication.Models;
 using Microsoft.Data.Sqlite;
 using System.Configuration;
+using Dapper;
 
 namespace CodingTrackerApplication;
 internal class CodingTrackerService
@@ -8,85 +9,77 @@ internal class CodingTrackerService
     static readonly string? connectionString = ConfigurationManager.AppSettings.Get("connectionString");
     public List<CodingSession> GetAllRecords()
     {
-        List<CodingSession> records = new List<CodingSession>();
-
-        Console.Clear();
         using (var connection = new SqliteConnection(connectionString))
         {
-            connection.Open();
-            var tableCmd = connection.CreateCommand();
-            tableCmd.CommandText =
-                $"SELECT * FROM coding_session";
-
-            List<CodingSession> tableData = new();
-
-            SqliteDataReader reader = tableCmd.ExecuteReader();
-
-            if (reader.HasRows)
-            {
-                while (reader.Read())
-                {
-                    tableData.Add(
-                    new CodingSession
-                    {
-                        Id = reader.GetInt32(0),
-                        StartTime = DateTime.Parse(reader.GetString(1)),
-                        EndTime = DateTime.Parse(reader.GetString(2)),
-                        Duration = reader.GetInt32(3)
-                    });
-                }
-            }
-            else
-            {
-                Console.WriteLine("No rows found");
-            }
-
-            connection.Close();
-
-            Console.WriteLine("----------------------------------------------------\n");
-            foreach (var dw in tableData)
-            {
-                Console.WriteLine($"{dw.Id} - {dw.StartTime.ToString("yyyy-MM-dd HH:mm")} - {dw.EndTime.ToString("yyyy-MM-dd HH:mm")} - {dw.Duration} minutes");
-            }
-            Console.WriteLine("----------------------------------------------------\n");
+            var query = "SELECT * FROM coding_session";
+            var records = connection.Query<CodingSession>(query).ToList();
+           
+            return records;        
         }
-
-        return records;
     }
     public void Create(DateTime startTime, DateTime endTime, int duration)
     {
         using (var connection = new SqliteConnection(connectionString))
         {
-            connection.Open();
-            var tableCmd = connection.CreateCommand();
-            tableCmd.CommandText =
-                $"INSERT INTO coding_session (StartTime, EndTime, Duration) VALUES ('{startTime}', '{endTime}', '{duration}')";
-
-            tableCmd.ExecuteNonQuery();
-            connection.Close();
+            var query = @"INSERT INTO coding_session (StartTime, EndTime, Duration) 
+                        VALUES (@StartTime, @EndTime, @Duration)";
+            connection.Execute(query, new { StartTime = startTime, EndTime = endTime, 
+                Duration = duration });
         }
     }
     public void Delete(int recordId)
     {
         using (var connection = new SqliteConnection(connectionString))
         {
-            connection.Open();
-            var tableCmd = connection.CreateCommand();
-            tableCmd.CommandText = $"DELETE from coding_session WHERE Id = '{recordId}'";
-            tableCmd.ExecuteNonQuery();
-            connection.Close();
+            var query = "DELETE FROM coding_session WHERE Id = @Id";
+            connection.Execute(query, new { Id = recordId });
         }
     }
     public void Update(int recordId, DateTime startTime, DateTime endTime, int duration)
     {
         using (var connection = new SqliteConnection(connectionString))
         {
-            connection.Open();
-            var tableCmd = connection.CreateCommand();
-            tableCmd.CommandText =
-                $"UPDATE coding_session SET StartTime = '{startTime}', EndTime = '{endTime}', Duration = '{duration}' WHERE Id = {recordId}";
-            tableCmd.ExecuteNonQuery();
-            connection.Close();
+            var query = @"UPDATE coding_session SET StartTime = @StartTime, EndTime = @EndTime, 
+                        Duration = @Duration WHERE Id = @Id";
+            connection.Execute(query, new { Id = recordId, StartTime = startTime, 
+                        EndTime = endTime, Duration = duration });
+        }
+    }
+
+    public List<CodingSession> GetFilteredRecords(string period, string order)
+    {
+        using (var connection = new SqliteConnection(connectionString))
+        {
+            string query = "SELECT * FROM coding_session";
+
+            // Filter by period
+            switch (period.ToLower())
+            {
+                case "days":
+                    query += " WHERE StartTime >= DATE('now', '-1 day')";
+                    break;
+                case "weeks":
+                    query += " WHERE StartTime >= DATE('now', '-7 days')";
+                    break;
+                case "years":
+                    query += " WHERE StartTime >= DATE('now', '-1 year')";
+                    break;
+                default:
+                    break;
+            }
+
+            // Add ordering
+            if (order.ToLower() == "asc")
+            {
+                query += " ORDER BY StartTime ASC";
+            }
+            else if (order.ToLower() == "desc")
+            {
+                query += " ORDER BY StartTime DESC";
+            }
+
+            var records = connection.Query<CodingSession>(query).ToList();
+            return records;
         }
     }
 }
