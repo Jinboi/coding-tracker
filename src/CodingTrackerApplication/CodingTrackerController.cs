@@ -128,4 +128,16 @@ internal class CodingTrackerController
 
         _codingTrackerService.Update(recordId, startTime, endTime, duration);
     }
+    public void GenerateReport()
+    {
+        Console.WriteLine("Choose a period for the report: (days/weeks/years/all)");
+        string period = Console.ReadLine()?.ToLower() ?? "all";
+
+        var report = _codingTrackerService.GetSessionReport(period);
+
+        Console.WriteLine("----------------------------------------------------\n");
+        Console.WriteLine($"Total Coding Duration: {report.totalDuration} minutes");
+        Console.WriteLine($"Average Coding Duration: {report.averageDuration} minutes");
+        Console.WriteLine("----------------------------------------------------\n");
+    }
 }

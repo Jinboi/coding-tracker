@@ -19,6 +19,7 @@ internal interface MainMenu
             AnsiConsole.Markup("\nType 3 to [underline blue]Delete[/]  Records.");
             AnsiConsole.Markup("\nType 4 to [underline blue]Update[/]  Records.");
             AnsiConsole.Markup("\nType 5 to [underline blue]View Filtered[/]  Records.");
+            AnsiConsole.Markup("\nType 6 to [underline blue]Generate Rerpot[/]");
 
             Console.WriteLine("\n------------------------------------------------------\n");
 
@@ -46,7 +47,9 @@ internal interface MainMenu
                 case "5":
                     _controller.ViewFilteredRecords();
                     break;
-
+                case "6":
+                    _controller.GenerateReport();
+                    break;
 
                 default:
                     Console.WriteLine("\nInvalid Command. Please type a number from 0 to 4.\n");

@@ -82,4 +82,29 @@ internal class CodingTrackerService
             return records;
         }
     }
+
+    public (double totalDuration, double averageDuration) GetSessionReport(string period)
+    {
+        using (var connection = new SqliteConnection(connectionString))
+        {
+            string query = period switch
+            {
+                "days" => @"SELECT SUM(Duration) AS TotalDuration, AVG(Duration) AS AverageDuration 
+                            FROM coding_session WHERE DATE(StartTime) = DATE('now')",
+
+                "weeks" => @"SELECT SUM(Duration) AS TotalDuration, AVG(Duration) AS AverageDuration 
+                            FROM coding_session WHERE strftime('%W', StartTime) = strftime('%W', 'now')",
+
+                "years" => @"SELECT SUM(Duration) AS TotalDuration, AVG(Duration) AS AverageDuration 
+                            FROM coding_session WHERE strftime('%Y', StartTime) = strftime('%Y', 'now')",
+
+                _ => @"SELECT SUM(Duration) AS TotalDuration, AVG(Duration) AS AverageDuration 
+                        FROM coding_session"
+            };
+
+            var result = connection.QuerySingleOrDefault<(double totalDuration, double averageDuration)>(query);
+
+            return result;
+        }
+    }
 }
