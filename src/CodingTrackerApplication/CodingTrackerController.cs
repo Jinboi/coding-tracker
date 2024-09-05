@@ -33,7 +33,6 @@ internal class CodingTrackerController
         }
         Console.WriteLine("----------------------------------------------------\n");
     }
-
     public void CreateRecord()
     {
         Console.WriteLine("Would you like to track the session using a stopwatch? (y/n)");
@@ -48,7 +47,6 @@ internal class CodingTrackerController
             ManualEntrySession();
         }
     }
-
     private void ManualEntrySession()
     {
         string startTimeInput = InputHelper.GetStartTimeInput();
@@ -70,7 +68,6 @@ internal class CodingTrackerController
 
         _codingTrackerService.Create(startTime, endTime, duration);
     }
-
     private void StartStopwatchSession()
     {
         Console.WriteLine("Press Enter to start the stopwatch...");
@@ -138,6 +135,44 @@ internal class CodingTrackerController
         Console.WriteLine("----------------------------------------------------\n");
         Console.WriteLine($"Total Coding Duration: {report.totalDuration} minutes");
         Console.WriteLine($"Average Coding Duration: {report.averageDuration} minutes");
+        Console.WriteLine("----------------------------------------------------\n");
+    }
+    public void SetGoal()
+    {
+        Console.WriteLine("Enter User ID:");
+        int userId = int.Parse(Console.ReadLine() ?? "0");
+
+        Console.WriteLine("Enter Goal Amount (in minutes):");
+        int goalAmount = int.Parse(Console.ReadLine() ?? "0");
+
+        Console.WriteLine("Enter Start Date (yyyy-MM-dd):");
+        DateTime startDate = DateTime.Parse(Console.ReadLine() ?? DateTime.Now.ToString("yyyy-MM-dd"));
+
+        Console.WriteLine("Enter End Date (yyyy-MM-dd):");
+        DateTime endDate = DateTime.Parse(Console.ReadLine() ?? DateTime.Now.ToString("yyyy-MM-dd"));
+
+        _codingTrackerService.SetGoal(userId, goalAmount, startDate, endDate);
+
+        Console.WriteLine("Goal has been set successfully.");
+    }
+    public void ViewGoalProgress()
+    {
+        Console.WriteLine("Enter User ID:");
+        int userId = int.Parse(Console.ReadLine() ?? "0");
+
+        var progress = _codingTrackerService.GetGoalProgress(userId);
+
+        if (progress == null)
+        {
+            Console.WriteLine("No goal found for this user.");
+            return;
+        }
+
+        Console.WriteLine("----------------------------------------------------\n");
+        Console.WriteLine($"Total Duration: {progress.TotalDuration} minutes");
+        Console.WriteLine($"Goal Amount: {progress.GoalAmount} minutes");
+        Console.WriteLine($"Progress: {progress.ProgressPercentage:F2}%");
+        Console.WriteLine($"Daily Goal: {progress.DailyGoal:F2} minutes/day to reach the goal");
         Console.WriteLine("----------------------------------------------------\n");
     }
 }

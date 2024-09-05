@@ -45,7 +45,6 @@ internal class CodingTrackerService
                         EndTime = endTime, Duration = duration });
         }
     }
-
     public List<CodingSession> GetFilteredRecords(string period, string order)
     {
         using (var connection = new SqliteConnection(connectionString))
@@ -82,7 +81,6 @@ internal class CodingTrackerService
             return records;
         }
     }
-
     public (double totalDuration, double averageDuration) GetSessionReport(string period)
     {
         using (var connection = new SqliteConnection(connectionString))
@@ -107,4 +105,117 @@ internal class CodingTrackerService
             return result;
         }
     }
+
+    public void SetGoal(int userId, int goalAmount, DateTime startDate, DateTime endDate)
+    {
+        using (var connection = new SqliteConnection(connectionString))
+        {
+            connection.Open();
+            using var command = connection.CreateCommand();
+            command.CommandText = @"
+                    INSERT INTO CodingGoals (UserId, GoalAmount, StartDate, EndDate)
+                    VALUES (@UserId, @GoalAmount, @StartDate, @EndDate)";
+            command.Parameters.AddWithValue("@UserId", userId);
+            command.Parameters.AddWithValue("@GoalAmount", goalAmount);
+            command.Parameters.AddWithValue("@StartDate", startDate.ToString("o"));
+            command.Parameters.AddWithValue("@EndDate", endDate.ToString("o"));
+            command.ExecuteNonQuery();
+        }
+    }
+
+    public GoalProgress GetGoalProgress(int userId)
+    {
+        var totalDuration = GetTotalDurationForGoal(userId);
+        var goal = GetGoal(userId);
+
+        if (goal == null) return null;
+
+        var totalDays = (goal.EndDate - goal.StartDate).TotalDays;
+        var daysLeft = (goal.EndDate - DateTime.Now).TotalDays;
+
+        var dailyGoal = (goal.GoalAmount - totalDuration) / daysLeft;
+        var progressPercentage = (totalDuration / goal.GoalAmount) * 100;
+
+        return new GoalProgress
+        {
+            TotalDuration = totalDuration,
+            GoalAmount = goal.GoalAmount,
+            ProgressPercentage = progressPercentage,
+            DailyGoal = dailyGoal
+        };
+    }
+
+    private Goal GetGoal(int userId)
+    {
+        using (var connection = new SqliteConnection(connectionString))
+        {
+            connection.Open();
+            using var command = connection.CreateCommand();
+            command.CommandText = @"
+                    SELECT GoalAmount, StartDate, EndDate
+                    FROM CodingGoals
+                    WHERE UserId = @UserId";
+            command.Parameters.AddWithValue("@UserId", userId);
+
+            using var reader = command.ExecuteReader();
+            if (reader.Read())
+            {
+                return new Goal
+                {
+                    GoalAmount = reader.GetInt32(0),
+                    StartDate = DateTime.Parse(reader.GetString(1)),
+                    EndDate = DateTime.Parse(reader.GetString(2))
+                };
+            }
+            return null;
+        }
+    }
+
+    private int GetTotalDurationForGoal(int userId)
+    {
+        using (var connection = new SqliteConnection(connectionString))
+        {
+            connection.Open();
+            using var command = connection.CreateCommand();
+            command.CommandText = @"
+                    SELECT SUM(Duration) 
+                    FROM coding_session
+                    WHERE StartTime >= (SELECT StartDate FROM CodingGoals WHERE UserId = @UserId)
+                      AND EndTime <= (SELECT EndDate FROM CodingGoals WHERE UserId = @UserId)";
+            command.Parameters.AddWithValue("@UserId", userId);
+
+            var result = command.ExecuteScalar();
+            return result != DBNull.Value ? Convert.ToInt32(result) : 0;
+        }
+    }
 }
+
+public class GoalProgress
+{
+    public int TotalDuration { get; set; }
+    public int GoalAmount { get; set; }
+    public double ProgressPercentage { get; set; }
+    public double DailyGoal { get; set; }
+}
+
+public class Goal
+{
+    public int GoalAmount { get; set; }
+    public DateTime StartDate { get; set; }
+    public DateTime EndDate { get; set; }
+}
+
+public class CodingRecord
+{
+    public int Id { get; set; }
+    public DateTime StartTime { get; set; }
+    public DateTime EndTime { get; set; }
+    public int Duration { get; set; }
+}
+
+public class Report
+{
+    public int TotalDuration { get; set; }
+    public double AverageDuration { get; set; }
+}
+

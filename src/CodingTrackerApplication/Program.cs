@@ -8,7 +8,6 @@ public static class Program
     public static void Main(string[] args)
     {
         CreateDatabase();       
-
         MainMenu.GetUserInput();
     }
     private static void CreateDatabase()
@@ -18,6 +17,7 @@ public static class Program
             connection.Open();
             var tableCmd = connection.CreateCommand();
 
+            // Existing table creation
             tableCmd.CommandText =
                 @"CREATE TABLE IF NOT EXISTS coding_session (
                         Id INTEGER PRIMARY KEY AUTOINCREMENT,                        
@@ -28,7 +28,19 @@ public static class Program
 
             tableCmd.ExecuteNonQuery();
 
+            // New table creation for CodingGoals
+            tableCmd.CommandText =
+                @"CREATE TABLE IF NOT EXISTS CodingGoals (
+                            Id INTEGER PRIMARY KEY AUTOINCREMENT,
+                            UserId INTEGER NOT NULL,
+                            GoalAmount INTEGER NOT NULL,
+                            StartDate TEXT NOT NULL,
+                            EndDate TEXT NOT NULL
+                            )";
+
+            tableCmd.ExecuteNonQuery();
+
             connection.Close();
         }
     }
-}
+}   

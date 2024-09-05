@@ -20,6 +20,8 @@ internal interface MainMenu
             AnsiConsole.Markup("\nType 4 to [underline blue]Update[/]  Records.");
             AnsiConsole.Markup("\nType 5 to [underline blue]View Filtered[/]  Records.");
             AnsiConsole.Markup("\nType 6 to [underline blue]Generate Rerpot[/]");
+            AnsiConsole.Markup("\nType 7 to [underline blue]Set Coding Goal[/]");
+            AnsiConsole.Markup("\nType 8 to [underline blue]View Goal Progress[/]");
 
             Console.WriteLine("\n------------------------------------------------------\n");
 
@@ -49,6 +51,12 @@ internal interface MainMenu
                     break;
                 case "6":
                     _controller.GenerateReport();
+                    break;
+                case "7":
+                    _controller.SetGoal();
+                    break;
+                case "8":
+                    _controller.ViewGoalProgress();
                     break;
 
                 default:
