@@ -17,26 +17,27 @@ public static class Program
             connection.Open();
             var tableCmd = connection.CreateCommand();
 
-            // Existing table creation
+            // Existing table creation with UserId added
             tableCmd.CommandText =
                 @"CREATE TABLE IF NOT EXISTS coding_session (
-                        Id INTEGER PRIMARY KEY AUTOINCREMENT,                        
-                        StartTime TEXT,
-                        EndTime TEXT,
-                        Duration INTEGER
-                        )";
+                    Id INTEGER PRIMARY KEY AUTOINCREMENT,                        
+                    UserId INTEGER NOT NULL,
+                    StartTime TEXT,
+                    EndTime TEXT,
+                    Duration INTEGER
+                    )";
 
             tableCmd.ExecuteNonQuery();
 
             // New table creation for CodingGoals
             tableCmd.CommandText =
                 @"CREATE TABLE IF NOT EXISTS CodingGoals (
-                            Id INTEGER PRIMARY KEY AUTOINCREMENT,
-                            UserId INTEGER NOT NULL,
-                            GoalAmount INTEGER NOT NULL,
-                            StartDate TEXT NOT NULL,
-                            EndDate TEXT NOT NULL
-                            )";
+                        Id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        UserId INTEGER NOT NULL,
+                        GoalAmount INTEGER NOT NULL,
+                        StartDate TEXT NOT NULL,
+                        EndDate TEXT NOT NULL
+                        )";
 
             tableCmd.ExecuteNonQuery();
 

@@ -35,6 +35,7 @@ internal class CodingTrackerController
     }
     public void CreateRecord()
     {
+
         Console.WriteLine("Would you like to track the session using a stopwatch? (y/n)");
         string useStopwatch = Console.ReadLine()?.Trim().ToLower() ?? string.Empty;
 
@@ -49,6 +50,11 @@ internal class CodingTrackerController
     }
     private void ManualEntrySession()
     {
+
+        // Ask the user for their ID
+        Console.WriteLine("Enter your User ID:");
+        int userId = int.Parse(Console.ReadLine() ?? "0");
+
         string startTimeInput = InputHelper.GetStartTimeInput();
         string endTimeInput = InputHelper.GetEndTimeInput();
 
@@ -66,10 +72,16 @@ internal class CodingTrackerController
             if (goBackToMainMenu == "0") MainMenu.GetUserInput();
         }
 
-        _codingTrackerService.Create(startTime, endTime, duration);
+        _codingTrackerService.Create(userId, startTime, endTime, duration);
     }
     private void StartStopwatchSession()
     {
+
+        // Ask the user for their ID
+        Console.WriteLine("Enter your User ID:");
+        int userId = int.Parse(Console.ReadLine() ?? "0");
+
+
         Console.WriteLine("Press Enter to start the stopwatch...");
         Console.ReadLine();
         DateTime startTime = DateTime.Now;
@@ -83,7 +95,7 @@ internal class CodingTrackerController
         double durationDouble = TimeHelper.CalculateDuration(startTime, endTime);
         int duration = Convert.ToInt32(durationDouble);
 
-        _codingTrackerService.Create(startTime, endTime, duration);
+        _codingTrackerService.Create(userId, startTime, endTime, duration);
         Console.WriteLine($"Session recorded: {duration} minutes");
     }
     internal void DeleteRecord()
@@ -106,6 +118,11 @@ internal class CodingTrackerController
 
         var recordId = Validation.GetNumberInput("\n\nPlease type Id of the record you would like to update. Type 0 to go back to Main Menu.\n\n");
 
+
+        // Ask the user for their ID
+        Console.WriteLine("Enter your User ID:");
+        int userId = int.Parse(Console.ReadLine() ?? "0");
+
         string startTimeInput = InputHelper.GetStartTimeInput();
         string endTimeInput = InputHelper.GetEndTimeInput();
 
@@ -123,7 +140,7 @@ internal class CodingTrackerController
             if (goBacktoMainMenu == "0") MainMenu.GetUserInput();
         }
 
-        _codingTrackerService.Update(recordId, startTime, endTime, duration);
+        _codingTrackerService.Update(recordId, userId, startTime, endTime, duration);
     }
     public void GenerateReport()
     {

@@ -17,13 +17,13 @@ internal class CodingTrackerService
             return records;        
         }
     }
-    public void Create(DateTime startTime, DateTime endTime, int duration)
+    public void Create(int userId, DateTime startTime, DateTime endTime, int duration)
     {
         using (var connection = new SqliteConnection(connectionString))
         {
-            var query = @"INSERT INTO coding_session (StartTime, EndTime, Duration) 
-                        VALUES (@StartTime, @EndTime, @Duration)";
-            connection.Execute(query, new { StartTime = startTime, EndTime = endTime, 
+            var query = @"INSERT INTO coding_session (UserId, StartTime, EndTime, Duration) 
+                        VALUES (@UserId, @StartTime, @EndTime, @Duration)";
+            connection.Execute(query, new { UserId = userId, StartTime = startTime, EndTime = endTime, 
                 Duration = duration });
         }
     }
@@ -35,13 +35,13 @@ internal class CodingTrackerService
             connection.Execute(query, new { Id = recordId });
         }
     }
-    public void Update(int recordId, DateTime startTime, DateTime endTime, int duration)
+    public void Update(int recordId, int userId, DateTime startTime, DateTime endTime, int duration)
     {
         using (var connection = new SqliteConnection(connectionString))
         {
-            var query = @"UPDATE coding_session SET StartTime = @StartTime, EndTime = @EndTime, 
+            var query = @"UPDATE coding_session SET UserId = @UserId, StartTime = @StartTime, EndTime = @EndTime, 
                         Duration = @Duration WHERE Id = @Id";
-            connection.Execute(query, new { Id = recordId, StartTime = startTime, 
+            connection.Execute(query, new { Id = recordId, UserId = userId, StartTime = startTime, 
                         EndTime = endTime, Duration = duration });
         }
     }
