@@ -1,4 +1,10 @@
-﻿using CodingTrackerApplication.Helpers;
+﻿// -------------------------------------------------------------------------------------------------
+// CodingTrackerApplication.Validation
+// -------------------------------------------------------------------------------------------------
+// Validation class to validate UserInputs.
+// -------------------------------------------------------------------------------------------------
+
+using CodingTrackerApplication.Helpers;
 
 namespace CodingTrackerApplication;
 internal class Validation
@@ -18,7 +24,7 @@ internal class Validation
         }
 
         int finalInput = Convert.ToInt32(numberInput);
-        s
+        
         return finalInput;
     }
 }

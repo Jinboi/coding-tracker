@@ -1,4 +1,11 @@
-﻿using System.Globalization;
+﻿// -------------------------------------------------------------------------------------------------
+// CodingTrackerApplication.Helpers.InputHelper
+// -------------------------------------------------------------------------------------------------
+// Provides helper methods to gather user inputs related to start and end times. It also ensures 
+// users can return to the main menu during input if needed.
+// -------------------------------------------------------------------------------------------------
+
+using System.Globalization;
 
 namespace CodingTrackerApplication.Helpers;
 internal class InputHelper

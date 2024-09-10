@@ -1,4 +1,12 @@
-﻿using CodingTrackerApplication.Helpers;
+﻿// -------------------------------------------------------------------------------------------------
+// CodingTrackerApplication.CodingTrackerController
+// -------------------------------------------------------------------------------------------------
+// Manages user inputs and directs them to appropriate services for handling database operations 
+// related to coding session tracking. Provides functionality for viewing, filtering, creating, 
+// updating, and deleting coding session records. It also allows users to set and monitor coding goals.
+// -------------------------------------------------------------------------------------------------
+
+using CodingTrackerApplication.Helpers;
 using System.Globalization;
 
 namespace CodingTrackerApplication;
@@ -77,7 +85,7 @@ internal class CodingTrackerController
         ViewGoalProgress();
     }
    private void StartStopwatchSession()
-{
+    {
     // Ask the user for their ID
     Console.WriteLine("Enter your User ID:");
     int userId = int.Parse(Console.ReadLine() ?? "0");
@@ -100,7 +108,7 @@ internal class CodingTrackerController
 
     // Update progress
     ViewGoalProgress();
-}
+    }
     internal void DeleteRecord()
     {
         Console.Clear();

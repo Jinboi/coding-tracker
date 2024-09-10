@@ -1,4 +1,11 @@
-﻿using CodingTrackerApplication.Helpers;
+﻿// -------------------------------------------------------------------------------------------------
+// CodingTrackerApplication.MainMenu
+// -------------------------------------------------------------------------------------------------
+// Main Menu of the CodingTrackerApplication. Takes UserInputs from the menu, then proceed to the 
+// CodingTrackerController.
+// -------------------------------------------------------------------------------------------------
+
+using CodingTrackerApplication.Helpers;
 using Spectre.Console;
 
 namespace CodingTrackerApplication;

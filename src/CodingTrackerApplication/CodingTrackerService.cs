@@ -1,4 +1,12 @@
-﻿using CodingTrackerApplication.Models;
+﻿// -------------------------------------------------------------------------------------------------
+// CodingTrackerApplication.CodingTrackerService
+// -------------------------------------------------------------------------------------------------
+// Interacts with the database to perform CRUD operations (Create, Read, Update, Delete) on coding 
+// session records. Also handles goal setting and progress tracking, including generating reports and 
+// filtering session data based on time periods.
+// -------------------------------------------------------------------------------------------------
+
+using CodingTrackerApplication.Models;
 using Microsoft.Data.Sqlite;
 using System.Configuration;
 using Dapper;
