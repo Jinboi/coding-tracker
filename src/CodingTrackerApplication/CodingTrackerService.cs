@@ -112,9 +112,11 @@ internal class CodingTrackerService
         {
             connection.Open();
             using var command = connection.CreateCommand();
+            // Reset goal progress if a new goal is set
             command.CommandText = @"
-                    INSERT INTO CodingGoals (UserId, GoalAmount, StartDate, EndDate)
-                    VALUES (@UserId, @GoalAmount, @StartDate, @EndDate)";
+                DELETE FROM CodingGoals WHERE UserId = @UserId;
+                INSERT INTO CodingGoals (UserId, GoalAmount, StartDate, EndDate)
+                VALUES (@UserId, @GoalAmount, @StartDate, @EndDate)";
             command.Parameters.AddWithValue("@UserId", userId);
             command.Parameters.AddWithValue("@GoalAmount", goalAmount);
             command.Parameters.AddWithValue("@StartDate", startDate.ToString("o"));
@@ -122,7 +124,6 @@ internal class CodingTrackerService
             command.ExecuteNonQuery();
         }
     }
-
     public GoalProgress GetGoalProgress(int userId)
     {
         var totalDuration = GetTotalDurationForGoal(userId);
@@ -133,8 +134,35 @@ internal class CodingTrackerService
         var totalDays = (goal.EndDate - goal.StartDate).TotalDays;
         var daysLeft = (goal.EndDate - DateTime.Now).TotalDays;
 
+        if (goal.GoalAmount == 0)
+        {
+            Console.WriteLine("Goal Amount is zero. Cannot calculate progress.");
+            return new GoalProgress
+            {
+                TotalDuration = totalDuration,
+                GoalAmount = goal.GoalAmount,
+                ProgressPercentage = 0,
+                DailyGoal = 0
+            };
+        }
+
+        // Handle case where there are no remaining days
+        if (daysLeft <= 0)
+        {
+            return new GoalProgress
+            {
+                TotalDuration = totalDuration,
+                GoalAmount = goal.GoalAmount,
+                ProgressPercentage = (totalDuration / goal.GoalAmount) * 100,
+                DailyGoal = 0
+            };
+        }
+
         var dailyGoal = (goal.GoalAmount - totalDuration) / daysLeft;
         var progressPercentage = (totalDuration / goal.GoalAmount) * 100;
+
+        Console.WriteLine($"Daily Goal: {dailyGoal}");
+        Console.WriteLine($"Progress Percentage: {progressPercentage}");
 
         return new GoalProgress
         {
@@ -144,7 +172,6 @@ internal class CodingTrackerService
             DailyGoal = dailyGoal
         };
     }
-
     private Goal GetGoal(int userId)
     {
         using (var connection = new SqliteConnection(connectionString))
@@ -170,7 +197,6 @@ internal class CodingTrackerService
             return null;
         }
     }
-
     private int GetTotalDurationForGoal(int userId)
     {
         using (var connection = new SqliteConnection(connectionString))
@@ -178,10 +204,10 @@ internal class CodingTrackerService
             connection.Open();
             using var command = connection.CreateCommand();
             command.CommandText = @"
-                    SELECT SUM(Duration) 
-                    FROM coding_session
-                    WHERE StartTime >= (SELECT StartDate FROM CodingGoals WHERE UserId = @UserId)
-                      AND EndTime <= (SELECT EndDate FROM CodingGoals WHERE UserId = @UserId)";
+                SELECT SUM(Duration) 
+                FROM coding_session
+                WHERE StartTime >= (SELECT StartDate FROM CodingGoals WHERE UserId = @UserId)
+                  AND EndTime <= (SELECT EndDate FROM CodingGoals WHERE UserId = @UserId)";
             command.Parameters.AddWithValue("@UserId", userId);
 
             var result = command.ExecuteScalar();
@@ -189,33 +215,3 @@ internal class CodingTrackerService
         }
     }
 }
-
-public class GoalProgress
-{
-    public int TotalDuration { get; set; }
-    public int GoalAmount { get; set; }
-    public double ProgressPercentage { get; set; }
-    public double DailyGoal { get; set; }
-}
-
-public class Goal
-{
-    public int GoalAmount { get; set; }
-    public DateTime StartDate { get; set; }
-    public DateTime EndDate { get; set; }
-}
-
-public class CodingRecord
-{
-    public int Id { get; set; }
-    public DateTime StartTime { get; set; }
-    public DateTime EndTime { get; set; }
-    public int Duration { get; set; }
-}
-
-public class Report
-{
-    public int TotalDuration { get; set; }
-    public double AverageDuration { get; set; }
-}
-

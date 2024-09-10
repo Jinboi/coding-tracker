@@ -18,7 +18,7 @@ internal class Validation
         }
 
         int finalInput = Convert.ToInt32(numberInput);
-
+        s
         return finalInput;
     }
 }

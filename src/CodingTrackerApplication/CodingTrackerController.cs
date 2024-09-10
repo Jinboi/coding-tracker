@@ -50,7 +50,6 @@ internal class CodingTrackerController
     }
     private void ManualEntrySession()
     {
-
         // Ask the user for their ID
         Console.WriteLine("Enter your User ID:");
         int userId = int.Parse(Console.ReadLine() ?? "0");
@@ -73,31 +72,35 @@ internal class CodingTrackerController
         }
 
         _codingTrackerService.Create(userId, startTime, endTime, duration);
+
+        // Update progress
+        ViewGoalProgress();
     }
-    private void StartStopwatchSession()
-    {
+   private void StartStopwatchSession()
+{
+    // Ask the user for their ID
+    Console.WriteLine("Enter your User ID:");
+    int userId = int.Parse(Console.ReadLine() ?? "0");
 
-        // Ask the user for their ID
-        Console.WriteLine("Enter your User ID:");
-        int userId = int.Parse(Console.ReadLine() ?? "0");
+    Console.WriteLine("Press Enter to start the stopwatch...");
+    Console.ReadLine();
+    DateTime startTime = DateTime.Now;
+    Console.WriteLine($"Started at: {startTime}");
 
+    Console.WriteLine("Press Enter to stop the stopwatch...");
+    Console.ReadLine();
+    DateTime endTime = DateTime.Now;
+    Console.WriteLine($"Stopped at: {endTime}");
 
-        Console.WriteLine("Press Enter to start the stopwatch...");
-        Console.ReadLine();
-        DateTime startTime = DateTime.Now;
-        Console.WriteLine($"Started at: {startTime}");
+    double durationDouble = TimeHelper.CalculateDuration(startTime, endTime);
+    int duration = Convert.ToInt32(durationDouble);
 
-        Console.WriteLine("Press Enter to stop the stopwatch...");
-        Console.ReadLine();
-        DateTime endTime = DateTime.Now;
-        Console.WriteLine($"Stopped at: {endTime}");
+    _codingTrackerService.Create(userId, startTime, endTime, duration);
+    Console.WriteLine($"Session recorded: {duration} minutes");
 
-        double durationDouble = TimeHelper.CalculateDuration(startTime, endTime);
-        int duration = Convert.ToInt32(durationDouble);
-
-        _codingTrackerService.Create(userId, startTime, endTime, duration);
-        Console.WriteLine($"Session recorded: {duration} minutes");
-    }
+    // Update progress
+    ViewGoalProgress();
+}
     internal void DeleteRecord()
     {
         Console.Clear();
@@ -186,10 +189,19 @@ internal class CodingTrackerController
         }
 
         Console.WriteLine("----------------------------------------------------\n");
-        Console.WriteLine($"Total Duration: {progress.TotalDuration} minutes");
-        Console.WriteLine($"Goal Amount: {progress.GoalAmount} minutes");
+        Console.WriteLine($"Total Duration Logged: {progress.TotalDuration} minutes");
+        Console.WriteLine($"Goal: {progress.GoalAmount} minutes");
         Console.WriteLine($"Progress: {progress.ProgressPercentage:F2}%");
-        Console.WriteLine($"Daily Goal: {progress.DailyGoal:F2} minutes/day to reach the goal");
+        Console.WriteLine($"Daily Goal to Reach Target: {progress.DailyGoal:F2} minutes/day");
         Console.WriteLine("----------------------------------------------------\n");
+
+        if (progress.ProgressPercentage >= 100)
+        {
+            Console.WriteLine("Congratulations! You've reached your goal.");
+        }
+        else
+        {
+            Console.WriteLine("Keep going! You're on your way to reaching your goal.");
+        }
     }
 }
