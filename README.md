@@ -57,51 +57,32 @@ This is the initial screen of the app when you start:
 
 ![CodingTracker initial screen](./img/codingTrackerInitialScreen.PNG)
 
+Press 1 to see Main Menu.
 
-You can set up a goal
-![CodingTracker  Goal](./img/codingTrackerGoal.PNG)
+![CodingTracker view](./img/codingTrackerView.PNG)
 
-You can view records that are filtered.
+Press 2 to insert a record.
 
-![CodingTracker filtered](./img/codingTrackerFilter.PNG)
-
-You can see goal progresses.
-
-![CodingTracker goal progress](./img/codingTrackerGoalProgress.PNG)
-
+![CodingTracker insert record](./img/codingTrackerInsert.PNG)
 
 You can see manually input your coding session time.
 
 ![CodingTracker manual input coding session](./img/codingTrackerManualInsert.PNG)
 
+Press 5 to view records that are filtered.
 
-You can see report.
+![CodingTracker filtered](./img/codingTrackerFilter.PNG)
+
+Press 6 to see report.
 
 ![CodingTracker report](./img/codingTrackerReport.PNG)
 
+Press 7 to set up a goal
+![CodingTracker  Goal](./img/codingTrackerGoal.PNG)
 
-You can see main Menu
+Press 8 to see goal progresses.
 
-![CodingTracker view](./img/codingTrackerView.PNG)
-
-
-You can insert a record.
-
-![CodingTracker insert record](./img/codingTrackerInsert.PNG)
-
-
-You can type 5 to add a new habit.
-
-![HabitLogger add habit screen](./img/habitLoggerAddHabit.PNG)
-
-
-You can also generate reports to view habit performance over time:
-
-![HabitLogger report screen](./img/habitLoggerReportScreen.PNG)
-
-You can also generate reports to view yearly performance over time:
-
-![HabitLogger report screen](./img/habitLoggerYearlyReportScreen.PNG)
+![CodingTracker goal progress](./img/codingTrackerGoalProgress.PNG)
 
 ## Choose an option:
 - **0**: To Close Application
