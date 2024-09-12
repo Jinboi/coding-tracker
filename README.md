@@ -80,7 +80,7 @@ Press 6 to see report.
 Press 7 to set up a goal
 ![CodingTracker  Goal](./img/codingTrackerGoal.PNG)
 
-Press 8 to see goal progresses.
+Press 8 to see goal progress.
 
 ![CodingTracker goal progress](./img/codingTrackerGoalProgress.PNG)
 
