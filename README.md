@@ -98,13 +98,12 @@ Press 8 to see goal progress.
 ## How It Works
 
 - **Menu Navigation**: Follow the on-screen instructions to log habits, view history, or generate reports.
-- **Customizable Habits**: Create habits that are meaningful to you and track them in a way that makes sense.
-- **Habit Reports**: Get detailed reports on your habits, including frequency and specific metrics.
+- **Customizable sessions**: Create coding sessions that are meaningful to you and track them in a way that makes sense.
 
 ## Room for Improvements
 
 - Consider using Spectre.Console for a more polished UI. 
-- Additional features like reminders and habit streaks could be added.
+- Additional features like reminders and daily streaks could be added.
 
 ## Contributing
 
