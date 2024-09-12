@@ -1,17 +1,20 @@
 ﻿// -------------------------------------------------------------------------------------------------
-// CodingTrackerApplication.MainMenu
+// CodingTrackerApplication.Views.MainMenu
 // -------------------------------------------------------------------------------------------------
 // Main Menu of the CodingTrackerApplication. Takes UserInputs from the menu, then proceed to the 
 // CodingTrackerController.
 // -------------------------------------------------------------------------------------------------
 
-using CodingTrackerApplication.Helpers;
+using CodingTrackerApplication.Controllers;
+using CodingTrackerApplication.Helpers.UtilityHelpers;
 using Spectre.Console;
 
-namespace CodingTrackerApplication;
+namespace CodingTrackerApplication.Views;
 internal interface MainMenu
 {
     private static readonly CodingTrackerController _controller = new();
+
+    private static readonly GoalController _goalController = new();
     internal static void GetUserInput()
     {
         Console.Clear();
@@ -60,10 +63,10 @@ internal interface MainMenu
                     _controller.GenerateReport();
                     break;
                 case "7":
-                    _controller.SetGoal();
+                    _goalController.SetGoal();
                     break;
                 case "8":
-                    _controller.ViewGoalProgress();
+                    _goalController.ViewGoalProgress();
                     break;
 
                 default:

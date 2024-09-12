@@ -11,7 +11,7 @@ using Microsoft.Data.Sqlite;
 using System.Configuration;
 using Dapper;
 
-namespace CodingTrackerApplication;
+namespace CodingTrackerApplication.Services;
 internal class CodingTrackerService
 {
     static readonly string? connectionString = ConfigurationManager.AppSettings.Get("connectionString");
@@ -21,8 +21,8 @@ internal class CodingTrackerService
         {
             var query = "SELECT * FROM coding_session";
             var records = connection.Query<CodingSession>(query).ToList();
-           
-            return records;        
+
+            return records;
         }
     }
     public void Create(int userId, DateTime startTime, DateTime endTime, int duration)
@@ -31,8 +31,13 @@ internal class CodingTrackerService
         {
             var query = @"INSERT INTO coding_session (UserId, StartTime, EndTime, Duration) 
                         VALUES (@UserId, @StartTime, @EndTime, @Duration)";
-            connection.Execute(query, new { UserId = userId, StartTime = startTime, EndTime = endTime, 
-                Duration = duration });
+            connection.Execute(query, new
+            {
+                UserId = userId,
+                StartTime = startTime,
+                EndTime = endTime,
+                Duration = duration
+            });
         }
     }
     public void Delete(int recordId)
@@ -49,8 +54,14 @@ internal class CodingTrackerService
         {
             var query = @"UPDATE coding_session SET UserId = @UserId, StartTime = @StartTime, EndTime = @EndTime, 
                         Duration = @Duration WHERE Id = @Id";
-            connection.Execute(query, new { Id = recordId, UserId = userId, StartTime = startTime, 
-                        EndTime = endTime, Duration = duration });
+            connection.Execute(query, new
+            {
+                Id = recordId,
+                UserId = userId,
+                StartTime = startTime,
+                EndTime = endTime,
+                Duration = duration
+            });
         }
     }
     public List<CodingSession> GetFilteredRecords(string period, string order)
@@ -89,32 +100,33 @@ internal class CodingTrackerService
             return records;
         }
     }
-    public (double totalDuration, double averageDuration) GetSessionReport(string period)
+    public Report GetSessionReport(string period)
     {
         using (var connection = new SqliteConnection(connectionString))
         {
             string query = period switch
             {
                 "days" => @"SELECT SUM(Duration) AS TotalDuration, AVG(Duration) AS AverageDuration 
-                            FROM coding_session WHERE DATE(StartTime) = DATE('now')",
+                        FROM coding_session WHERE DATE(StartTime) = DATE('now')",
 
                 "weeks" => @"SELECT SUM(Duration) AS TotalDuration, AVG(Duration) AS AverageDuration 
-                            FROM coding_session WHERE strftime('%W', StartTime) = strftime('%W', 'now')",
+                        FROM coding_session WHERE strftime('%W', StartTime) = strftime('%W', 'now')",
 
                 "years" => @"SELECT SUM(Duration) AS TotalDuration, AVG(Duration) AS AverageDuration 
-                            FROM coding_session WHERE strftime('%Y', StartTime) = strftime('%Y', 'now')",
+                        FROM coding_session WHERE strftime('%Y', StartTime) = strftime('%Y', 'now')",
 
                 _ => @"SELECT SUM(Duration) AS TotalDuration, AVG(Duration) AS AverageDuration 
-                        FROM coding_session"
+                    FROM coding_session"
             };
 
+            // Fetch the result as a tuple
             var result = connection.QuerySingleOrDefault<(double totalDuration, double averageDuration)>(query);
 
-            return result;
+            // Return a Report object using the result
+            return new Report((int)result.totalDuration, result.averageDuration);
         }
     }
-
-    public void SetGoal(int userId, int goalAmount, DateTime startDate, DateTime endDate)
+    public void SetGoal(Goal goal)
     {
         using (var connection = new SqliteConnection(connectionString))
         {
@@ -122,13 +134,13 @@ internal class CodingTrackerService
             using var command = connection.CreateCommand();
             // Reset goal progress if a new goal is set
             command.CommandText = @"
-                DELETE FROM CodingGoals WHERE UserId = @UserId;
-                INSERT INTO CodingGoals (UserId, GoalAmount, StartDate, EndDate)
-                VALUES (@UserId, @GoalAmount, @StartDate, @EndDate)";
-            command.Parameters.AddWithValue("@UserId", userId);
-            command.Parameters.AddWithValue("@GoalAmount", goalAmount);
-            command.Parameters.AddWithValue("@StartDate", startDate.ToString("o"));
-            command.Parameters.AddWithValue("@EndDate", endDate.ToString("o"));
+            DELETE FROM CodingGoals WHERE UserId = @UserId;
+            INSERT INTO CodingGoals (UserId, GoalAmount, StartDate, EndDate)
+            VALUES (@UserId, @GoalAmount, @StartDate, @EndDate)";
+            command.Parameters.AddWithValue("@UserId", goal.UserId);
+            command.Parameters.AddWithValue("@GoalAmount", goal.GoalAmount);
+            command.Parameters.AddWithValue("@StartDate", goal.StartDate.ToString("o"));
+            command.Parameters.AddWithValue("@EndDate", goal.EndDate.ToString("o"));
             command.ExecuteNonQuery();
         }
     }
@@ -144,7 +156,6 @@ internal class CodingTrackerService
 
         if (goal.GoalAmount == 0)
         {
-            Console.WriteLine("Goal Amount is zero. Cannot calculate progress.");
             return new GoalProgress
             {
                 TotalDuration = totalDuration,
@@ -154,23 +165,19 @@ internal class CodingTrackerService
             };
         }
 
-        // Handle case where there are no remaining days
         if (daysLeft <= 0)
         {
             return new GoalProgress
             {
                 TotalDuration = totalDuration,
                 GoalAmount = goal.GoalAmount,
-                ProgressPercentage = (totalDuration / goal.GoalAmount) * 100,
+                ProgressPercentage = CalculateProgressPercentage(totalDuration, goal.GoalAmount),
                 DailyGoal = 0
             };
         }
 
-        var dailyGoal = (goal.GoalAmount - totalDuration) / daysLeft;
-        var progressPercentage = (totalDuration / goal.GoalAmount) * 100;
-
-        Console.WriteLine($"Daily Goal: {dailyGoal}");
-        Console.WriteLine($"Progress Percentage: {progressPercentage}");
+        var dailyGoal = CalculateDailyGoal(goal.GoalAmount, totalDuration, daysLeft);
+        var progressPercentage = CalculateProgressPercentage(totalDuration, goal.GoalAmount);
 
         return new GoalProgress
         {
@@ -179,6 +186,16 @@ internal class CodingTrackerService
             ProgressPercentage = progressPercentage,
             DailyGoal = dailyGoal
         };
+    }
+
+    private double CalculateProgressPercentage(int totalDuration, int goalAmount)
+    {
+        return goalAmount == 0 ? 0 : totalDuration / (double)goalAmount * 100;
+    }
+
+    private double CalculateDailyGoal(int goalAmount, int totalDuration, double daysLeft)
+    {
+        return (goalAmount - totalDuration) / daysLeft;
     }
     private Goal GetGoal(int userId)
     {

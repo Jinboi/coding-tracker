@@ -1,14 +1,15 @@
-﻿    // -------------------------------------------------------------------------------------------------
-    // CodingTrackerApplication.Program
-    // -------------------------------------------------------------------------------------------------
-    // Insert point of the application. Sets up tables if they don't exist. Then, proceeds to MainMenu.
-    // -------------------------------------------------------------------------------------------------
+﻿// -------------------------------------------------------------------------------------------------
+// CodingTrackerApplication.Program
+// -------------------------------------------------------------------------------------------------
+// Insert point of the application. Sets up tables if they don't exist. Then, proceeds to MainMenu.
+// -------------------------------------------------------------------------------------------------
 
-    using Microsoft.Data.Sqlite;
-    using System.Configuration;
+using CodingTrackerApplication.Views;
+using Microsoft.Data.Sqlite;
+using System.Configuration;
 
-    namespace CodingTrackerApplication;
-    public static class Program
+namespace CodingTrackerApplication;
+public static class Program
     {
         static readonly string? connectionString = ConfigurationManager.AppSettings.Get("connectionString");
         public static void Main(string[] args)

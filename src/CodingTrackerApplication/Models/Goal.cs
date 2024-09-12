@@ -8,6 +8,7 @@
 namespace CodingTrackerApplication.Models;
 public class Goal
 {
+    public int UserId { get; set; }
     public int GoalAmount { get; set; }
     public DateTime StartDate { get; set; }
     public DateTime EndDate { get; set; }
