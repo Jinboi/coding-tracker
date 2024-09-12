@@ -57,7 +57,7 @@ This is the initial screen of the app when you start:
 
 ![CodingTracker initial screen](./img/codingTrackerInitialScreen.PNG)
 
-Press 1 to see Main Menu.
+Press 1 to see view all records.
 
 ![CodingTracker view](./img/codingTrackerView.PNG)
 
