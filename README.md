@@ -55,15 +55,40 @@ __________________
 
 This is the initial screen of the app when you start:
 
-![HabitLogger initial screen](./img/habitLoggerInitialScreen.PNG)
+![CodingTracker initial screen](./img/codingTrackerInitialScreen.PNG)
 
-You will notice that seed data has been entered already if you type 1 to view all records.
 
-![HabitLogger main menu screen](./img/habitLoggerMainMenu.PNG)
+You can set up a goal
+![CodingTracker  Goal](./img/codingTrackerGoal.PNG)
 
-You can type 2 to add a new log of a habit.
+You can view records that are filtered.
 
-![HabitLogger add habit log screen](./img/habitLoggerLogScreen.PNG)
+![CodingTracker filtered](./img/codingTrackerFilter.PNG)
+
+You can see goal progresses.
+
+![CodingTracker goal progress](./img/codingTrackerGoalProgress.PNG)
+
+
+You can see manually input your coding session time.
+
+![CodingTracker manual input coding session](./img/codingTrackerManualInsert.PNG)
+
+
+You can see report.
+
+![CodingTracker report](./img/codingTrackerReport.PNG)
+
+
+You can see main Menu
+
+![CodingTracker view](./img/codingTrackerView.PNG)
+
+
+You can insert a record.
+
+![CodingTracker insert record](./img/codingTrackerInsert.PNG)
+
 
 You can type 5 to add a new habit.
 
